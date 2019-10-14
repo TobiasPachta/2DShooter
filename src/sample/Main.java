@@ -15,6 +15,10 @@ public class Main extends Application {
         primaryStage.setFullScreen(true);
         primaryStage.setScene(new Scene(root, 300, 275));
         primaryStage.show();
+        //TODO UI: Login Playername, Prüfen ob player exestiert im file, oder neue player erstellen
+        //TODO UI: MAIN: HOST, CONNECT, LEADERBOARD
+        //TODO UI: PLAYWIN: Playername, Kills, board with Coords,
+        //TODO UI: Player Spawn move with awsd shoot with arrowkeys
     }
 
 
