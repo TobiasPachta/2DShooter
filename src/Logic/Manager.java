@@ -1,8 +1,11 @@
 package Logic;
 
 import Data.Data;
+import javafx.scene.paint.Color;
 
+import java.awt.*;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -87,18 +90,23 @@ public class Manager {
     //input key, wasd then movement, arrowkeys then shoot
     public void moveUp()
     {
-        currentPlayer.setyCord(((currentPlayer.getyCord() - currentPlayer.speed) % gameField.y + gameField.y) % gameField.y);
+        currentPlayer.setyCord(currentPlayer.getyCord() - currentPlayer.speed); // % gameField.y + gameField.y) % gameField.y);
     }
     public void moveDown()
     {
-        currentPlayer.setyCord(((currentPlayer.getyCord() + currentPlayer.speed) % gameField.y + gameField.y) % gameField.y);
+        currentPlayer.setyCord(currentPlayer.getyCord() + currentPlayer.speed); // % gameField.y + gameField.y) % gameField.y);
     }
     public void moveLeft()
     {
-        currentPlayer.setxCord(((currentPlayer.getxCord() - currentPlayer.speed) % gameField.x+gameField.x) % gameField.x);
+        currentPlayer.setxCord(currentPlayer.getxCord() - currentPlayer.speed); // % gameField.x + gameField.x) % gameField.x);
     }
     public void moveRight()
     {
-        currentPlayer.setxCord(((currentPlayer.getxCord() + currentPlayer.speed) % gameField.x + gameField.x) % gameField.x);
+        currentPlayer.setxCord(currentPlayer.getxCord() + currentPlayer.speed); //% gameField.x + gameField.x) % gameField.x);
     }
+
+    public Shot shoot(int heading) {
+        Player who = currentPlayer;
+        return new Shot((who.getxCord()) + 50, (who.getyCord()) + 50, 10, 10, heading, Color.YELLOW);
+        }
 }

@@ -1,6 +1,8 @@
 package Main;
 
+import Logic.GameField;
 import Logic.Manager;
+import Logic.Shot;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -29,6 +31,10 @@ public class Mainframe extends Application {
     private static Mainframe instance;
     private boolean isLoggedIn;
     private Manager manager;
+    public ArrayList<Logic.Shot> shots = new ArrayList<Logic.Shot>();
+    boolean aShot;
+    boolean moving;
+    double timer = 0;
 
     public Mainframe() {
         instance = this;
@@ -143,37 +149,94 @@ public class Mainframe extends Application {
     }
 
     private Image redPlayer;
+    private Image shotImage;
     private void handleInput(ArrayList<String> input)
     {
+        timer -= 0.016;
         if(input.contains("W"))
         {
-            redPlayer = new Image("PlayerModels/RedNorth.png");
-            manager.moveUp();
+            if(manager.currentPlayer.getyCord() > 1) {
+                redPlayer = new Image("images/RedNorth.png");
+                manager.moveUp();
+                moving = true;
+            }
         }
         else if(input.contains("A"))
         {
-            redPlayer = new Image("PlayerModels/RedWest.png");
-            manager.moveLeft();
+            if(manager.currentPlayer.getxCord() > 1) {
+                redPlayer = new Image("images/RedWest.png");
+                manager.moveLeft();
+                moving = true;
+            }
         }
         else if(input.contains("S"))
         {
-            redPlayer = new Image("PlayerModels/RedSouth.png");
-            manager.moveDown();
+            if(manager.currentPlayer.getyCord() < (manager.gameField.y - 101)) {
+                redPlayer = new Image("images/RedSouth.png");
+                manager.moveDown();
+                moving = true;
+            }
         }
         else if(input.contains("D"))
         {
-            redPlayer = new Image("PlayerModels/RedEast.png");
-            manager.moveRight();
+            if(manager.currentPlayer.getxCord() < (manager.gameField.x - 101)) {
+                redPlayer = new Image("images/RedEast.png");
+                manager.moveRight();
+                moving = true;
+            }
+        } else {
+            moving = false;
         }
         //TODO UI: Player Spawn, shoot with arrowkeys
-        else if(input.contains("UP"))
-        {}
-        else if(input.contains("DOWN"))
-        {}
-        else if(input.contains("LEFT"))
-        {}
-        else if(input.contains("Right"))
-        {}
+        if(input.contains("UP")) {
+            if(timer <= 0) {
+                if (aShot == false) {
+                    if (moving == false) {
+                        redPlayer = new Image("images/RedNorth.png");
+                    }
+                    shots.add(manager.shoot(0));
+                    aShot = true;
+                    timer = 0.5;
+                }
+            }
+        }
+        else if(input.contains("DOWN")) {
+            if(timer <= 0) {
+                if (aShot == false) {
+                    if (moving == false) {
+                        redPlayer = new Image("images/RedSouth.png");
+                    }
+                    shots.add(manager.shoot(2));
+                    aShot = true;
+                    timer = 0.5;
+                }
+            }
+        }
+        else if(input.contains("LEFT")) {
+            if(timer <= 0) {
+                if (aShot == false) {
+                    if(moving == false) {
+                        redPlayer = new Image("images/RedWest.png");
+                    }
+                    shots.add(manager.shoot(3));
+                    aShot = true;
+                    timer = 0.5;
+                }
+            }
+        }
+        else if(input.contains("RIGHT")) {
+            if(timer <= 0) {
+                 if (aShot == false) {
+                     if(moving == false) {
+                         redPlayer = new Image("images/RedEast.png");
+                     }
+                    shots.add(manager.shoot(1));
+                    aShot = true;
+                    timer = 0.5;
+                }
+            }
+        }
+
     }
 
     private void setUpInGameScene() {
@@ -189,7 +252,7 @@ public class Mainframe extends Application {
         verticalBox.setAlignment(Pos.TOP_CENTER);
         verticalBox.getChildren().addAll(horizontalBox,canvas);
 
-        inGame = new Scene(verticalBox, 1400, 628);
+        inGame = new Scene(verticalBox, 1400, 1000);
         inGame.getStylesheets().add(Mainframe.class.getResource("UIStyle.css").toString());
         ArrayList<String> input = new ArrayList<>();
         inGame.setOnKeyPressed(
@@ -204,11 +267,13 @@ public class Mainframe extends Application {
                 e -> {
                     String code = e.getCode().toString();
                     input.remove( code );
+                    aShot = false;
                 });
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        redPlayer = new Image("PlayerModels/RedNorth.png");
+        redPlayer = new Image("images/RedNorth.png");
+        shotImage = new Image("images/shot.png");
 
         new AnimationTimer()
         {
@@ -219,8 +284,48 @@ public class Mainframe extends Application {
                 gc.fillRect(0,0,manager.gameField.x,manager.gameField.y);
 
                 handleInput(input);
+
                 // background image clears canvas
                 gc.drawImage( redPlayer, manager.currentPlayer.getxCord(), manager.currentPlayer.getyCord());
+                shots.forEach(shot -> {
+                    switch (shot.direction) {
+                        case 0:
+                            shot.moveUp();
+                            gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
+                            if(shot.getTranslateY() < -10) {
+                                shot.dead = true;
+                            }
+                            break;
+                        case 1:
+                            shot.moveRight();
+                            gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
+                            if(shot.getTranslateX() > manager.gameField.x) {
+                                shot.dead = true;
+                            }
+                            break;
+                        case 2:
+                            shot.moveDown();
+                            gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
+                            if(shot.getTranslateY() > manager.gameField.y) {
+                                shot.dead = true;
+                            }
+                            break;
+                        case 3:
+                            shot.moveLeft();
+                            gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
+                            if(shot.getTranslateX() < -10) {
+                                shot.dead = true;
+                            }
+                            break;
+                    }
+
+                    //if((shot.getBoundsInParent().intersects(enemyPlayer))
+
+                    if(shot.dead == true) {
+                        shots.remove(shot);
+                    }
+
+                });
             }
         }.start();
 

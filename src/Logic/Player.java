@@ -59,4 +59,5 @@ public class Player {
     public void setyCord(int yCord) {
         this.yCord = yCord;
     }
+
 }
