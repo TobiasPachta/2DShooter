@@ -5,28 +5,32 @@ import Data.Data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Manager {
     private Data data;
     private Tools tools;
     private List<Player> listOfPlayer;
     public Player currentPlayer;
+    public GameField gameField;
 
     public Manager() {
         data = new Data();
         tools = new Tools();
         listOfPlayer = new ArrayList<>();
+        gameField = new GameField();
         load();
     }
 
-    //TODO: Player Input,
-    //input key, wasd then movement, arrowkeys then shoot
-    //TODO: Display Playerfield loop
-    //check if shoot reaches end of map, check if shoot is on player(hit)
     public void newGame() {
-        //TODO: Create Field
-        //TODO: Spwan PLayer
-        //TODO: Log new game started
+        SpawnPlayer();
+        //TODO: Log new game started for when both player have to start at the same time
+    }
+
+    public void SpawnPlayer()
+    {
+        currentPlayer.setxCord(ThreadLocalRandom.current().nextInt(0, gameField.x));
+        currentPlayer.setyCord(ThreadLocalRandom.current().nextInt(0, gameField.y));
     }
 
     //TODO: PlayerGotShot
@@ -77,5 +81,24 @@ public class Manager {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    //TODO: Player Input,
+    //input key, wasd then movement, arrowkeys then shoot
+    public void moveUp()
+    {
+        currentPlayer.setyCord(((currentPlayer.getyCord() - currentPlayer.speed) % gameField.y + gameField.y) % gameField.y);
+    }
+    public void moveDown()
+    {
+        currentPlayer.setyCord(((currentPlayer.getyCord() + currentPlayer.speed) % gameField.y + gameField.y) % gameField.y);
+    }
+    public void moveLeft()
+    {
+        currentPlayer.setxCord(((currentPlayer.getxCord() - currentPlayer.speed) % gameField.x+gameField.x) % gameField.x);
+    }
+    public void moveRight()
+    {
+        currentPlayer.setxCord(((currentPlayer.getxCord() + currentPlayer.speed) % gameField.x + gameField.x) % gameField.x);
     }
 }
