@@ -1,6 +1,7 @@
 package Main;
 
 import Logic.GameField;
+import Logic.Hitbox;
 import Logic.Manager;
 import Logic.Shot;
 import javafx.animation.AnimationTimer;
@@ -287,11 +288,16 @@ public class Mainframe extends Application {
 
                 // background image clears canvas
                 gc.drawImage( redPlayer, manager.currentPlayer.getxCord(), manager.currentPlayer.getyCord());
+
                 shots.forEach(shot -> {
+                    if(shot.dead == true) {
+                        shots.remove(shot);
+                    }
                     switch (shot.direction) {
                         case 0:
                             shot.moveUp();
                             gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
+
                             if(shot.getTranslateY() < -10) {
                                 shot.dead = true;
                             }
@@ -319,11 +325,11 @@ public class Mainframe extends Application {
                             break;
                     }
 
-                    //if((shot.getBoundsInParent().intersects(enemyPlayer))
-
-                    if(shot.dead == true) {
-                        shots.remove(shot);
+                    if((shot.getBoundsInParent().intersects(manager.currentPlayer.getBoundsInParent()))) {
+                        //he ded
                     }
+
+
 
                 });
             }
@@ -331,7 +337,7 @@ public class Mainframe extends Application {
 
         stage.setScene(inGame);
         stage.setTitle("2D Shooter EXTREME");
-        stage.setFullScreen(true);
+        stage.setFullScreen(false);
         stage.show();
     }
 

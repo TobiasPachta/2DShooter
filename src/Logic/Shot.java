@@ -8,11 +8,12 @@ public class Shot extends Rectangle {
     int speed = 20;
     public int direction;
 
-
     Shot(int x, int y, int w, int h, int direction, Color color) {
         super(w, h, color);
 
         this.direction = direction;
+
+        Hitbox box = new Hitbox(x, y, w, h, "bullet");
 
         setTranslateX(x);
         setTranslateY(y);
@@ -22,6 +23,7 @@ public class Shot extends Rectangle {
 
     public void moveUp() {
         setTranslateY(getTranslateY() - speed);
+
     }
     public void moveRight() {
         setTranslateX(getTranslateX() + speed);

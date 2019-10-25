@@ -1,6 +1,9 @@
 package Logic;
 
-public class Player {
+import java.awt.*;
+import javafx.scene.shape.Rectangle;
+
+public class Player extends Rectangle {
     private String name;
     private int kills;
     private int xCord;
