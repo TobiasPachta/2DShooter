@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class Data {
+public class IOData {
     private String fileName = "Players.txt";
 
     public void writeNewPlayer(String outputLine) throws IOException {

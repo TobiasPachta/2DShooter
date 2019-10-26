@@ -1,28 +1,88 @@
 package Logic;
 
-import Data.Data;
+import Data.IOData;
+import Main.Alerter;
+import javafx.scene.control.Alert;
 import javafx.scene.paint.Color;
 
-import java.awt.*;
 import java.io.IOException;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Manager {
-    private Data data;
+    private IOData IOData;
     private Tools tools;
     private List<Player> listOfPlayer;
+    public Player otherPlayer;
     public Player currentPlayer;
     public GameField gameField;
+    public Data.Host host;
+    public Data.Client client;
+    public boolean isConnected = false;
 
     public Manager() {
-        data = new Data();
+        IOData = new IOData();
         tools = new Tools();
         listOfPlayer = new ArrayList<>();
         gameField = new GameField();
         load();
+    }
+
+    public void initHost() {
+        try {
+            if (host != null)
+                host.host.close();
+        } catch (IOException ioExc) {
+            Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
+        }
+        host = null;
+        otherPlayer = null;
+        host = new Data.Host();
+        host.createHost();
+    }
+
+    public void initClient() {
+        try {
+            if (client != null)
+                client.host.close();
+        } catch (IOException ioExc) {
+            Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
+        }
+        client = null;
+        otherPlayer = null;
+        client = new Data.Client();
+    }
+
+    public void handleIncommingMessages() {
+        String message = "";
+        try {
+            if (client != null)
+                message = client.readMessage();
+            else if (host != null)
+                message = host.readMessage();
+        } catch (IOException ioExc) {
+            Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
+        }
+
+        String[] commands = message.split("/");
+        for (String command : commands) {
+            //new login
+            if (command.startsWith("nl")) {
+                String[] splitLine = command.split(":");
+
+                if (tools.checkIfPlayerExists(splitLine[1], listOfPlayer)) {
+                    for (Player player : listOfPlayer) {
+                        if (player.toString().contains(splitLine[1])) {
+                            otherPlayer = player;
+                            break;
+                        }
+                    }
+                }
+            }
+            //TODO: Handle other messages
+
+        }
     }
 
     public void newGame() {
@@ -30,10 +90,14 @@ public class Manager {
         //TODO: Log new game started for when both player have to start at the same time
     }
 
-    public void SpawnPlayer()
-    {
+    private void SpawnPlayer() {
         currentPlayer.setxCord(ThreadLocalRandom.current().nextInt(0, gameField.x));
         currentPlayer.setyCord(ThreadLocalRandom.current().nextInt(0, gameField.y));
+    }
+
+    public void inGame() {
+        //TODO: send currentPlayer Infos, send currentPLayer Shots
+        handleIncommingMessages();
     }
 
     //TODO: PlayerGotShot
@@ -42,11 +106,11 @@ public class Manager {
         //TODO: If Shot coord == player coord
         //shoot owner gets raiseKill()
         //then respawn shot player
-        //TODO: Update UI
         //TODO: Save new Stats
     }
 
     public String login(String playerName) {
+        load();
         if (tools.checkIfPlayerExists(playerName, listOfPlayer)) {
             for (Player player : listOfPlayer) {
                 if (player.toString().contains(playerName)) {
@@ -54,25 +118,37 @@ public class Manager {
                     break;
                 }
             }
-
-            return "Welcome back " + currentPlayer.getName();
         } else {
             currentPlayer = new Player(playerName);
             listOfPlayer.add(currentPlayer);
             saveNewPlayer(currentPlayer);
+        }
+        SendNewLoginInfo();
+        return "Welcome: " + currentPlayer.getName();
 
-            return "Welcome: " + currentPlayer.getName();
+    }
+
+
+    //TODO: more send functions
+    public void SendNewLoginInfo() {
+        try {
+            if (client != null && currentPlayer != null)
+                client.writeMessage("/nl:" + currentPlayer.getName());
+            else if (host != null && currentPlayer != null)
+                host.writeMessage("/nl:" + currentPlayer.getName());
+        } catch (IOException ioExc) {
+            Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
         }
     }
 
-    public void load() {
-        String content = data.readWholeFile();
+    private void load() {
+        String content = IOData.readWholeFile();
         listOfPlayer = tools.handlePlayerContent(content);
     }
 
-    public void saveNewPlayer(Player playerToSave) {
+    private void saveNewPlayer(Player playerToSave) {
         try {
-            data.writeNewPlayer(playerToSave.toString());
+            IOData.writeNewPlayer(playerToSave.toString());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -80,33 +156,30 @@ public class Manager {
 
     void updatePlayers() {
         try {
-            data.writeNewFile(tools.createContentFromList(listOfPlayer));
+            IOData.writeNewFile(tools.createContentFromList(listOfPlayer));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-    //TODO: Player Input,
-    //input key, wasd then movement, arrowkeys then shoot
-    public void moveUp()
-    {
+    public void moveUp() {
         currentPlayer.setyCord(currentPlayer.getyCord() - currentPlayer.speed); // % gameField.y + gameField.y) % gameField.y);
     }
-    public void moveDown()
-    {
+
+    public void moveDown() {
         currentPlayer.setyCord(currentPlayer.getyCord() + currentPlayer.speed); // % gameField.y + gameField.y) % gameField.y);
     }
-    public void moveLeft()
-    {
+
+    public void moveLeft() {
         currentPlayer.setxCord(currentPlayer.getxCord() - currentPlayer.speed); // % gameField.x + gameField.x) % gameField.x);
     }
-    public void moveRight()
-    {
+
+    public void moveRight() {
         currentPlayer.setxCord(currentPlayer.getxCord() + currentPlayer.speed); //% gameField.x + gameField.x) % gameField.x);
     }
 
     public Shot shoot(int heading) {
         Player who = currentPlayer;
         return new Shot((who.getxCord()) + 50, (who.getyCord()) + 50, 10, 10, heading, Color.YELLOW);
-        }
+    }
 }

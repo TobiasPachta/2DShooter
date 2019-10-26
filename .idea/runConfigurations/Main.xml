@@ -4,7 +4,7 @@
     <module name="2DShooter" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="Logic.*" />
+        <option name="PATTERN" value="Data.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
