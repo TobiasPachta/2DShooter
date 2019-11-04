@@ -9,6 +9,9 @@ public class Player extends Rectangle {
     private int xCord;
     private int yCord;
     public int speed = 10;
+    public boolean hasShot;
+    public boolean isMoving;
+    public double shotCooldownTimer = 0;
 
     public Player(String playerName, int playerKills) {
         name = playerName;

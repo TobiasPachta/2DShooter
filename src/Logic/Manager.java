@@ -21,6 +21,8 @@ public class Manager {
     public Data.Client client;
     public boolean isConnected = false;
 
+    public List<Logic.Shot> curretPlayerShots = new ArrayList<>();
+
     public Manager() {
         IOData = new IOData();
         tools = new Tools();
@@ -80,12 +82,27 @@ public class Manager {
                     }
                 }
             }
-            //TODO: Handle other messages
-
+            //Type Coordinates
+            else if(command.startsWith("tc")) {
+                //Type X Y Direction
+            }
+            //Client Input
+            else if(command.startsWith("ci")){
+                //Type Direction (1,2,3,4 up, down, left right)
+            }
+            //Kill
+            else if(command.startsWith("k")){
+                //Player
+            }
+            //GameOver
+            else if(command.startsWith("go")){
+                // Stop.
+            }
         }
     }
 
     public void newGame() {
+        //TODO: nur von host
         SpawnPlayer();
         //TODO: Log new game started for when both player have to start at the same time
     }
@@ -97,15 +114,19 @@ public class Manager {
 
     public void inGame() {
         //TODO: send currentPlayer Infos, send currentPLayer Shots
+
         handleIncommingMessages();
     }
 
     //TODO: PlayerGotShot
     //Player dies respawn, kill for other player up Save new kill in fiel
-    void CheckIfPLayerGotHit() {
-        //TODO: If Shot coord == player coord
-        //shoot owner gets raiseKill()
-        //then respawn shot player
+    public void CheckIfPLayerGotHit(Shot shot) {
+        //TODO: check for both shot.type who gets shot?
+        if ((shot.getBoundsInParent().intersects(currentPlayer.getBoundsInParent()))) {
+            //he ded
+        }
+        //TODO: shoot owner gets raiseKill()
+        //TODO: then respawn shot player
         //TODO: Save new Stats
     }
 
@@ -178,8 +199,14 @@ public class Manager {
         currentPlayer.setxCord(currentPlayer.getxCord() + currentPlayer.speed); //% gameField.x + gameField.x) % gameField.x);
     }
 
-    public Shot shoot(int heading) {
+    private Shot shoot(int heading, int player) {
         Player who = currentPlayer;
-        return new Shot((who.getxCord()) + 50, (who.getyCord()) + 50, 10, 10, heading, Color.YELLOW);
+        return new Shot((who.getxCord()) + 50, (who.getyCord()) + 50, 10, 10, heading, Color.YELLOW, player);
+    }
+
+    public void addShot(int heading) {
+        curretPlayerShots.add(shoot(heading, 0));
+        currentPlayer.hasShot = true;
+        currentPlayer.shotCooldownTimer = 0.5;
     }
 }

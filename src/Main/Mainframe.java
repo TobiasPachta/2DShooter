@@ -1,7 +1,5 @@
 package Main;
 
-import Logic.GameField;
-import Logic.Hitbox;
 import Logic.Manager;
 import Logic.Shot;
 import javafx.animation.AnimationTimer;
@@ -23,22 +21,17 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 
 public class Mainframe extends Application {
-    //TODO UI: MAIN: LEADERBOARD
-    //TODO UI: PLAYWIN:
-    private Stage stage;
+    //TODO UI: MAIN: LEADERBOARD Manager.ListOfPlayer sollte befühlt sein nur noch sortieren und ausgeben
+    //TODO UI: AFter exiting the game last message will be send PlayerSignOut and game ends, exit application
+    private Stage currentPrimaryStage;
     private Scene mainMenue;
     private Scene inGame;
     private static Mainframe instance;
     private Manager manager;
-    //TODO: Bitte in Manager oder Shot Klasse
-    //moving is Shot classer, timer? wemgehört die Timer name mehr spezifieren
-    private ArrayList<Logic.Shot> shots = new ArrayList<>();
-    private boolean aShot;
-    private boolean moving;
-    private double timer = 0;
     private Label lblConnectionInfo;
 
     public Mainframe() {
@@ -52,11 +45,11 @@ public class Mainframe extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        stage = primaryStage;
+        currentPrimaryStage = primaryStage;
 
         setUpMainMenue();
 
-        stage.show();
+        currentPrimaryStage.show();
     }
 
     private void setUpMainMenue() {
@@ -85,8 +78,8 @@ public class Mainframe extends Application {
         mainMenue = new Scene(verticalBox, 300, 600);
         mainMenue.getStylesheets().add(Mainframe.class.getResource("UIStyle.css").toString());
 
-        stage.setScene(mainMenue);
-        stage.setTitle("2D Shooter Main Menue");
+        currentPrimaryStage.setScene(mainMenue);
+        currentPrimaryStage.setTitle("2D Shooter Main Menue");
     }
 
     private void handleHost() {
@@ -210,6 +203,7 @@ public class Mainframe extends Application {
             manager.handleIncommingMessages();
             if (manager.otherPlayer != null)
                 lblConnectionInfo.setText("Connected to " + manager.otherPlayer.getName());
+            //TODO: Client automaticly in start game after connection
         } else
             lblConnectionInfo.setText("Disconnected");
     }
@@ -284,84 +278,66 @@ public class Mainframe extends Application {
         manager.newGame();
     }
 
-    private Image redPlayer;
+    private Image currentPlayerImage;
+    private Image otherPlayerImage;
     private Image shotImage;
 
+    private void setPlayerMovementImage(String imagePath){
+        currentPlayerImage = new Image(imagePath);
+        manager.currentPlayer.isMoving = true;
+    }
+
+
     private void handleInput(ArrayList<String> input) {
-        timer -= 0.016;
+        manager.currentPlayer.shotCooldownTimer -= 0.016;
         if (input.contains("W")) {
             if (manager.currentPlayer.getyCord() > 1) {
-                redPlayer = new Image("images/RedNorth.png");
+                setPlayerMovementImage("images/RedNorth.png");
                 manager.moveUp();
-                moving = true;
             }
         } else if (input.contains("A")) {
             if (manager.currentPlayer.getxCord() > 1) {
-                redPlayer = new Image("images/RedWest.png");
+                setPlayerMovementImage("images/RedWest.png");
                 manager.moveLeft();
-                moving = true;
             }
         } else if (input.contains("S")) {
             if (manager.currentPlayer.getyCord() < (manager.gameField.y - 101)) {
-                redPlayer = new Image("images/RedSouth.png");
+                setPlayerMovementImage("images/RedSouth.png");
                 manager.moveDown();
-                moving = true;
             }
         } else if (input.contains("D")) {
             if (manager.currentPlayer.getxCord() < (manager.gameField.x - 101)) {
-                redPlayer = new Image("images/RedEast.png");
+                setPlayerMovementImage("images/RedEast.png");
                 manager.moveRight();
-                moving = true;
             }
         } else {
-            moving = false;
-        }
-        if (input.contains("UP")) {
-            if (timer <= 0) {
-                if (!aShot) {
-                    if (!moving) {
-                        redPlayer = new Image("images/RedNorth.png");
-                    }
-                    shots.add(manager.shoot(0));
-                    aShot = true;
-                    timer = 0.5;
-                }
-            }
-        } else if (input.contains("DOWN")) {
-            if (timer <= 0) {
-                if (!aShot) {
-                    if (!moving) {
-                        redPlayer = new Image("images/RedSouth.png");
-                    }
-                    shots.add(manager.shoot(2));
-                    aShot = true;
-                    timer = 0.5;
-                }
-            }
-        } else if (input.contains("LEFT")) {
-            if (timer <= 0) {
-                if (!aShot) {
-                    if (!moving) {
-                        redPlayer = new Image("images/RedWest.png");
-                    }
-                    shots.add(manager.shoot(3));
-                    aShot = true;
-                    timer = 0.5;
-                }
-            }
-        } else if (input.contains("RIGHT")) {
-            if (timer <= 0) {
-                if (!aShot) {
-                    if (!moving) {
-                        redPlayer = new Image("images/RedEast.png");
-                    }
-                    shots.add(manager.shoot(1));
-                    aShot = true;
-                    timer = 0.5;
-                }
-            }
+            manager.currentPlayer.isMoving = false;
         }
 
+        if (manager.currentPlayer.shotCooldownTimer <= 0 && !manager.currentPlayer.hasShot) {
+            if (input.contains("UP")) {
+                if (!manager.currentPlayer.isMoving) {
+                    currentPlayerImage = new Image("images/RedNorth.png");
+                }
+                manager.addShot(0);
+
+            } else if (input.contains("DOWN")) {
+                if (!manager.currentPlayer.isMoving) {
+                    currentPlayerImage = new Image("images/RedSouth.png");
+                }
+                manager.addShot(2);
+            } else if (input.contains("LEFT")) {
+                if (!manager.currentPlayer.isMoving) {
+                    currentPlayerImage = new Image("images/RedWest.png");
+                }
+                manager.addShot(3);
+            } else if (input.contains("RIGHT")) {
+                if (!manager.currentPlayer.isMoving) {
+                    currentPlayerImage = new Image("images/RedEast.png");
+                }
+                manager.addShot(1);
+            }
+        }
     }
 
     private void setUpInGameScene() {
@@ -392,16 +368,24 @@ public class Mainframe extends Application {
                 e -> {
                     String code = e.getCode().toString();
                     input.remove(code);
-                    aShot = false;
+                    manager.currentPlayer.hasShot = false;
                 });
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        redPlayer = new Image("images/RedNorth.png");
+        currentPlayerImage = new Image("images/RedNorth.png");
         shotImage = new Image("images/shot.png");
 
         new AnimationTimer() {
             public void handle(long currentNanoTime) {
+                if (manager.client != null) {
+                    //Schickt Movement Shott
+                    //Nachrichten empfangen
+                }
+                if (manager.host != null) {
+                    //Lese Buffer
+                    //Schickt Coordinaten
+                }
                 manager.inGame();
                 gc.clearRect(0, 0, manager.gameField.x, manager.gameField.y);
                 gc.setFill(Color.DARKGRAY);
@@ -410,57 +394,50 @@ public class Mainframe extends Application {
                 handleInput(input);
 
                 // background image clears canvas
-                gc.drawImage(redPlayer, manager.currentPlayer.getxCord(), manager.currentPlayer.getyCord());
+                gc.drawImage(currentPlayerImage, manager.currentPlayer.getxCord(), manager.currentPlayer.getyCord());
 
-                shots.forEach(shot -> {
-                    if (shot.dead == true) {
-                        shots.remove(shot);
-                    }
+                Iterator<Shot> i = manager.curretPlayerShots.iterator();
+                while (i.hasNext()) {
+                    Shot shot = i.next();
                     switch (shot.direction) {
                         case 0:
                             shot.moveUp();
-                            gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
-
                             if (shot.getTranslateY() < -10) {
                                 shot.dead = true;
                             }
                             break;
                         case 1:
                             shot.moveRight();
-                            gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
                             if (shot.getTranslateX() > manager.gameField.x) {
                                 shot.dead = true;
                             }
                             break;
                         case 2:
                             shot.moveDown();
-                            gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
                             if (shot.getTranslateY() > manager.gameField.y) {
                                 shot.dead = true;
                             }
                             break;
                         case 3:
                             shot.moveLeft();
-                            gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
                             if (shot.getTranslateX() < -10) {
                                 shot.dead = true;
                             }
                             break;
                     }
-
-                    if ((shot.getBoundsInParent().intersects(manager.currentPlayer.getBoundsInParent()))) {
-                        //he ded
+                    if (shot.dead) {
+                        i.remove();
                     }
-
-
-                });
+                    gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
+                    manager.CheckIfPLayerGotHit(shot);
+                }
             }
         }.start();
 
-        stage.setScene(inGame);
-        stage.setTitle("2D Shooter EXTREME");
-        stage.setFullScreen(false);
-        stage.show();
+        currentPrimaryStage.setScene(inGame);
+        currentPrimaryStage.setTitle("2D Shooter EXTREME");
+        currentPrimaryStage.setFullScreen(false);
+        currentPrimaryStage.show();
     }
 
     public static void main(String[] args) {

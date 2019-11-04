@@ -5,12 +5,15 @@ import javafx.scene.shape.Rectangle;
 
 public class Shot extends Rectangle {
     public boolean dead = false;
-    int speed = 20;
+    public int speed = 20;
     public int direction;
+    //type 0 current
+    //type 1 other
+    public int type;
 
-    Shot(int x, int y, int w, int h, int direction, Color color) {
+    Shot(int x, int y, int w, int h, int direction, Color color, int type) {
         super(w, h, color);
-
+        this.type = type;
         this.direction = direction;
 
         Hitbox box = new Hitbox(x, y, w, h, "bullet");
