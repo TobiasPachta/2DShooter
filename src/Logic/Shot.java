@@ -4,14 +4,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class Shot extends Rectangle {
+    public static int width = 10;
+    public static int height = 10;
+    public static Color color = Color.YELLOW;
     public boolean dead = false;
     public int speed = 20;
-    public int direction;
+    public Direction direction;
     //type 0 current
     //type 1 other
     public int type;
 
-    Shot(int x, int y, int w, int h, int direction, Color color, int type) {
+    Shot(int x, int y, int w, int h, Direction direction, Color color, int type) {
         super(w, h, color);
         this.type = type;
         this.direction = direction;
@@ -20,7 +23,6 @@ public class Shot extends Rectangle {
 
         setTranslateX(x);
         setTranslateY(y);
-
     }
 
 
@@ -37,4 +39,5 @@ public class Shot extends Rectangle {
     public void moveLeft() {
         setTranslateX(getTranslateX() - speed);
     }
+
 }

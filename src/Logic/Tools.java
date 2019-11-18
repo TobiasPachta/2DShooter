@@ -23,7 +23,7 @@ public class Tools {
             } else if (line.contains("Kills:")) {
                 String[] killsLine = line.split(":");
                 kills = new Integer(killsLine[1].trim());
-                players.add(new Player(playerName, kills));
+                players.add(new Player(playerName, kills, Color.Blue));
             }
         }
 

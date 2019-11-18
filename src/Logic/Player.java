@@ -1,6 +1,6 @@
 package Logic;
 
-import java.awt.*;
+import javafx.scene.image.Image;
 import javafx.scene.shape.Rectangle;
 
 public class Player extends Rectangle {
@@ -8,19 +8,23 @@ public class Player extends Rectangle {
     private int kills;
     private int xCord;
     private int yCord;
+    public Color color;
     public int speed = 10;
-    public boolean hasShot;
-    public boolean isMoving;
     public double shotCooldownTimer = 0;
+    public Direction direction;
 
-    public Player(String playerName, int playerKills) {
+    public Player(String playerName, int playerKills, Color color) {
         name = playerName;
         kills = playerKills;
+        this.color = color;
+        direction = Direction.NORTH;
     }
 
-    public Player(String playerName) {
+    public Player(String playerName, Color color) {
         name = playerName;
         kills = 0;
+        this.color = color;
+        direction = Direction.NORTH;
     }
 
     public String getName() {
@@ -66,4 +70,19 @@ public class Player extends Rectangle {
         this.yCord = yCord;
     }
 
+    public Image getPlayerImage() {
+        String playerImage = "images/"+color.toString();
+
+        if (direction == Direction.NORTH) {
+            playerImage+="North";
+        }else if (direction == Direction.EAST) {
+            playerImage+="East";
+        }else if (direction == Direction.SOUTH) {
+            playerImage+="South";
+        }else if (direction == Direction.WEST) {
+            playerImage+="West";
+        }
+        playerImage+=".png";
+        return new Image(playerImage);
+    }
 }

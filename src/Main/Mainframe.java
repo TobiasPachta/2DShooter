@@ -12,7 +12,6 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -165,7 +164,7 @@ public class Mainframe extends Application {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField txfServerIP = new TextField();
-        txfServerIP.setText("192.168.8.103");
+        txfServerIP.setText(manager.client.getMyIP());
 
         TextField txfPort = new TextField();
         txfPort.setText(manager.client.getMyPort());
@@ -278,67 +277,6 @@ public class Mainframe extends Application {
         manager.newGame();
     }
 
-    private Image currentPlayerImage;
-    private Image otherPlayerImage;
-    private Image shotImage;
-
-    private void setPlayerMovementImage(String imagePath){
-        currentPlayerImage = new Image(imagePath);
-        manager.currentPlayer.isMoving = true;
-    }
-
-
-    private void handleInput(ArrayList<String> input) {
-        manager.currentPlayer.shotCooldownTimer -= 0.016;
-        if (input.contains("W")) {
-            if (manager.currentPlayer.getyCord() > 1) {
-                setPlayerMovementImage("images/RedNorth.png");
-                manager.moveUp();
-            }
-        } else if (input.contains("A")) {
-            if (manager.currentPlayer.getxCord() > 1) {
-                setPlayerMovementImage("images/RedWest.png");
-                manager.moveLeft();
-            }
-        } else if (input.contains("S")) {
-            if (manager.currentPlayer.getyCord() < (manager.gameField.y - 101)) {
-                setPlayerMovementImage("images/RedSouth.png");
-                manager.moveDown();
-            }
-        } else if (input.contains("D")) {
-            if (manager.currentPlayer.getxCord() < (manager.gameField.x - 101)) {
-                setPlayerMovementImage("images/RedEast.png");
-                manager.moveRight();
-            }
-        } else {
-            manager.currentPlayer.isMoving = false;
-        }
-
-        if (manager.currentPlayer.shotCooldownTimer <= 0 && !manager.currentPlayer.hasShot) {
-            if (input.contains("UP")) {
-                if (!manager.currentPlayer.isMoving) {
-                    currentPlayerImage = new Image("images/RedNorth.png");
-                }
-                manager.addShot(0);
-
-            } else if (input.contains("DOWN")) {
-                if (!manager.currentPlayer.isMoving) {
-                    currentPlayerImage = new Image("images/RedSouth.png");
-                }
-                manager.addShot(2);
-            } else if (input.contains("LEFT")) {
-                if (!manager.currentPlayer.isMoving) {
-                    currentPlayerImage = new Image("images/RedWest.png");
-                }
-                manager.addShot(3);
-            } else if (input.contains("RIGHT")) {
-                if (!manager.currentPlayer.isMoving) {
-                    currentPlayerImage = new Image("images/RedEast.png");
-                }
-                manager.addShot(1);
-            }
-        }
-    }
 
     private void setUpInGameScene() {
         lblPlayer = new Label("Player: ");
@@ -368,57 +306,47 @@ public class Mainframe extends Application {
                 e -> {
                     String code = e.getCode().toString();
                     input.remove(code);
-                    manager.currentPlayer.hasShot = false;
                 });
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        currentPlayerImage = new Image("images/RedNorth.png");
-        shotImage = new Image("images/shot.png");
-
         new AnimationTimer() {
             public void handle(long currentNanoTime) {
-                if (manager.client != null) {
-                    //Schickt Movement Shott
-                    //Nachrichten empfangen
-                }
-                if (manager.host != null) {
-                    //Lese Buffer
-                    //Schickt Coordinaten
-                }
-                manager.inGame();
+                manager.doInGame();
+
                 gc.clearRect(0, 0, manager.gameField.x, manager.gameField.y);
                 gc.setFill(Color.DARKGRAY);
                 gc.fillRect(0, 0, manager.gameField.x, manager.gameField.y);
 
-                handleInput(input);
+                manager.handleInput(input);
 
                 // background image clears canvas
-                gc.drawImage(currentPlayerImage, manager.currentPlayer.getxCord(), manager.currentPlayer.getyCord());
+                gc.drawImage(manager.currentPlayer.getPlayerImage(), manager.currentPlayer.getxCord(), manager.currentPlayer.getyCord());
+                gc.drawImage(manager.otherPlayer.getPlayerImage(), manager.otherPlayer.getxCord(), manager.otherPlayer.getyCord());
 
-                Iterator<Shot> i = manager.curretPlayerShots.iterator();
+                Iterator<Shot> i = manager.playerShots.iterator();
                 while (i.hasNext()) {
                     Shot shot = i.next();
                     switch (shot.direction) {
-                        case 0:
+                        case NORTH:
                             shot.moveUp();
                             if (shot.getTranslateY() < -10) {
                                 shot.dead = true;
                             }
                             break;
-                        case 1:
+                        case EAST:
                             shot.moveRight();
                             if (shot.getTranslateX() > manager.gameField.x) {
                                 shot.dead = true;
                             }
                             break;
-                        case 2:
+                        case SOUTH:
                             shot.moveDown();
                             if (shot.getTranslateY() > manager.gameField.y) {
                                 shot.dead = true;
                             }
                             break;
-                        case 3:
+                        case WEST:
                             shot.moveLeft();
                             if (shot.getTranslateX() < -10) {
                                 shot.dead = true;
@@ -428,7 +356,7 @@ public class Mainframe extends Application {
                     if (shot.dead) {
                         i.remove();
                     }
-                    gc.drawImage(shotImage, shot.getTranslateX(), shot.getTranslateY());
+                    gc.drawImage(manager.shotImage, shot.getTranslateX(), shot.getTranslateY());
                     manager.CheckIfPLayerGotHit(shot);
                 }
             }
