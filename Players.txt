@@ -1,20 +1,15 @@
-
 Player: Balint 
-Kills: 0 
-
+Kills: 34 
 
 Player: 9 
 Kills: 0 
 
-
 Player: 1 
 Kills: 0 
-
 
 Player: Alint 
 Kills: 0 
 
-
 Player: Tobi 
-Kills: 0 
+Kills: 5 
 

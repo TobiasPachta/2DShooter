@@ -137,7 +137,7 @@ public class Mainframe extends Application {
             lblConnectionInfo.setText("Hosting" + manager.host.client.getLocalAddress());
             manager.isConnected = true;
             if (manager.currentPlayer != null) {
-                manager.SendNewLoginInfo();
+                manager.sendNewLoginInfo();
             }
             manager.handleIncommingMessages();
             if (manager.otherPlayer != null)
@@ -197,12 +197,11 @@ public class Mainframe extends Application {
         if (manager.client.host != null) {
             lblConnectionInfo.setText("Connected to " + manager.client.host.getLocalAddress());
             if (manager.currentPlayer != null) {
-                manager.SendNewLoginInfo();
+                manager.sendNewLoginInfo();
             }
             manager.handleIncommingMessages();
             if (manager.otherPlayer != null)
                 lblConnectionInfo.setText("Connected to " + manager.otherPlayer.getName());
-            //TODO: Client automaticly in start game after connection
         } else
             lblConnectionInfo.setText("Disconnected");
     }
@@ -272,11 +271,14 @@ public class Mainframe extends Application {
     private Label lblKills;
 
     private void handleInGame() {
-        lblPlayer.setText("Player: " + manager.currentPlayer.getName());
-        lblKills.setText("Kills: " + manager.currentPlayer.getKills());
+        updatePlayerStats();
         manager.newGame();
     }
 
+    private void updatePlayerStats() {
+        lblPlayer.setText("Player: " + manager.currentPlayer.getName());
+        lblKills.setText("Kills: " + manager.currentPlayer.getKills());
+    }
 
     private void setUpInGameScene() {
         lblPlayer = new Label("Player: ");
@@ -313,6 +315,7 @@ public class Mainframe extends Application {
         new AnimationTimer() {
             public void handle(long currentNanoTime) {
                 manager.doInGame();
+                updatePlayerStats();
 
                 gc.clearRect(0, 0, manager.gameField.x, manager.gameField.y);
                 gc.setFill(Color.DARKGRAY);
@@ -357,7 +360,8 @@ public class Mainframe extends Application {
                         i.remove();
                     }
                     gc.drawImage(manager.shotImage, shot.getTranslateX(), shot.getTranslateY());
-                    manager.CheckIfPLayerGotHit(shot);
+                    if (manager.host != null)
+                        manager.checkIfPLayerGotHit(shot);
                 }
             }
         }.start();

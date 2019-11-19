@@ -1,19 +1,22 @@
 package Logic;
 
 import javafx.scene.image.Image;
-import javafx.scene.shape.Rectangle;
 
-public class Player extends Rectangle {
+public class Player {
+    private static int width = 100;
+    private static int height = 100;
     private String name;
     private int kills;
     private int xCord;
     private int yCord;
-    public Color color;
-    public int speed = 10;
-    public double shotCooldownTimer = 0;
-    public Direction direction;
+    Color color;
+    int speed = 10;
+    double shotCooldownTimer = 0;
+    Direction direction;
+    Hitbox hitbox;
 
     public Player(String playerName, int playerKills, Color color) {
+        hitbox = new Hitbox(0, 0, width, height, playerName);
         name = playerName;
         kills = playerKills;
         this.color = color;
@@ -21,6 +24,7 @@ public class Player extends Rectangle {
     }
 
     public Player(String playerName, Color color) {
+        hitbox = new Hitbox(0, 0, width, height, playerName);
         name = playerName;
         kills = 0;
         this.color = color;
@@ -42,7 +46,7 @@ public class Player extends Rectangle {
         return kills;
     }
 
-    public void setKills(int kills) {
+    void setKills(int kills) {
         if (kills < 0)
             return;
 
@@ -58,31 +62,33 @@ public class Player extends Rectangle {
         return xCord;
     }
 
-    public void setxCord(int xCord) {
+    void setxCord(int xCord) {
         this.xCord = xCord;
+        hitbox.setX(xCord);
     }
 
     public int getyCord() {
         return yCord;
     }
 
-    public void setyCord(int yCord) {
+    void setyCord(int yCord) {
         this.yCord = yCord;
+        hitbox.setY(yCord);
     }
 
     public Image getPlayerImage() {
-        String playerImage = "images/"+color.toString();
+        String playerImage = "images/" + color.toString();
 
         if (direction == Direction.NORTH) {
-            playerImage+="North";
-        }else if (direction == Direction.EAST) {
-            playerImage+="East";
-        }else if (direction == Direction.SOUTH) {
-            playerImage+="South";
-        }else if (direction == Direction.WEST) {
-            playerImage+="West";
+            playerImage += "North";
+        } else if (direction == Direction.EAST) {
+            playerImage += "East";
+        } else if (direction == Direction.SOUTH) {
+            playerImage += "South";
+        } else if (direction == Direction.WEST) {
+            playerImage += "West";
         }
-        playerImage+=".png";
+        playerImage += ".png";
         return new Image(playerImage);
     }
 }
