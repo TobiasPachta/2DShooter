@@ -1,6 +1,7 @@
 package Main;
 
 import Logic.Manager;
+import Logic.Player;
 import Logic.Shot;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -12,23 +13,25 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
+import java.util.List;
 
 public class Mainframe extends Application {
-    //TODO UI: MAIN: LEADERBOARD Manager.ListOfPlayer sollte befühlt sein nur noch sortieren und ausgeben
     //TODO UI: AFter exiting the game last message will be send PlayerSignOut and game ends, exit application
     private Stage currentPrimaryStage;
     private Scene mainMenue;
     private Scene inGame;
+    private Scene Leaderboard;
     private static Mainframe instance;
     private Manager manager;
     private Label lblConnectionInfo;
@@ -69,6 +72,7 @@ public class Mainframe extends Application {
         btnLogin.setOnAction(e -> handleLogin(lblLoginLog));
 
         Button btnLeaderboard = new Button("Leaderboard");
+        btnLeaderboard.setOnAction(e -> handleLeaderboard());
         //TODO: Add event on Leaderboard button
 
         VBox verticalBox = new VBox(20);
@@ -370,6 +374,54 @@ public class Mainframe extends Application {
         currentPrimaryStage.setTitle("2D Shooter EXTREME");
         currentPrimaryStage.setFullScreen(false);
         currentPrimaryStage.show();
+    }
+
+    private void handleLeaderboard()
+    {
+        int leaderboardCount = 10;
+
+        Label lblHeader= new Label(String.format("Top %d Players",leaderboardCount));
+
+        List<Label> lblPlayerNames = new ArrayList<>();
+        List<Label> lblPlayerKills= new ArrayList<>();
+
+        manager.listOfPlayer.sort(Comparator.comparingInt(Player::getKills).reversed());
+
+        int i = 0;
+        for (Logic.Player player: manager.listOfPlayer) {
+            lblPlayerNames.add(new Label("Player: "+player.getName()));
+            lblPlayerKills.add(new Label("Kills: "+ player.getKills()));
+            if(i == leaderboardCount)
+                break;
+            i++;
+        }
+
+        Button btnBackToMainMenue = new Button("Return");
+        btnBackToMainMenue.setOnAction(e -> currentPrimaryStage.setScene(mainMenue));
+
+        VBox playerInfos = new VBox(20);
+        playerInfos.setAlignment(Pos.CENTER);
+
+        playerInfos.getChildren().add(lblHeader);
+
+        int playerSize = manager.listOfPlayer.size();
+        for(i = 0; i < leaderboardCount; i++)
+        {
+            playerInfos.getChildren().add(lblPlayerNames.get(i));
+            playerInfos.getChildren().add(lblPlayerKills.get(i));
+        }
+
+        VBox verticalBoxTopLeft = new VBox(btnBackToMainMenue);
+        verticalBoxTopLeft.setAlignment(Pos.TOP_LEFT);
+
+        VBox verticalBox = new VBox(20);
+        verticalBox.getChildren().addAll(verticalBoxTopLeft, playerInfos);
+
+        Leaderboard = new Scene(verticalBox, 300, playerSize*80);
+        Leaderboard.getStylesheets().add(Mainframe.class.getResource("UIStyle.css").toString());
+
+        currentPrimaryStage.setScene(Leaderboard);
+        currentPrimaryStage.setTitle("2D Shooter Leaderboard");
     }
 
     public static void main(String[] args) {

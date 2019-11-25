@@ -1,15 +1,43 @@
 Player: Balint 
 Kills: 34 
 
-Player: 9 
-Kills: 0 
+Player: Alex
+Kills: 15
 
-Player: 1 
-Kills: 0 
+Player: TATA
+Kills: 8
 
 Player: Alint 
 Kills: 0 
 
 Player: Tobi 
-Kills: 5 
+Kills: 5
+
+Player: Peter
+Kills: 34
+
+Player: Steve
+Kills: 2
+
+Player: Klaus
+Kills: 4
+
+Player: Snitte
+Kills: 3
+
+Player: Snice
+Kills: 1
+
+Player: Teri
+Kills: 6
+
+Player: Killer
+Kills: 4
+
+Player: Miller
+Kills: 13
+
+Player: Drölf
+Kills: 2
+
 

@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Manager {
     private IOData IOData;
     private Tools tools;
-    private List<Player> listOfPlayer;
+    public List<Player> listOfPlayer;
     public Player otherPlayer;
     public Player currentPlayer;
     public GameField gameField;
