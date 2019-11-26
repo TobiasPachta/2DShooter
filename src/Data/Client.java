@@ -9,7 +9,7 @@ import java.net.Socket;
 
 public class Client {
     public Socket host;
-    private int port = 1111;
+    private int port = 10270;
     private String ip = "127.0.0.1";
 
     public Client() {
@@ -43,5 +43,14 @@ public class Client {
 
     public void writeMessage(String message) throws IOException {
         ConnectionIO.writeMessage(host, message);
+    }
+
+    public void close() {
+        try {
+            if (!host.isClosed())
+                host.close();
+        } catch (IOException ioExc) {
+            Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
+        }
     }
 }

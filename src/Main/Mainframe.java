@@ -54,6 +54,14 @@ public class Mainframe extends Application {
         currentPrimaryStage.show();
     }
 
+    @Override
+    public void stop() {
+        if (manager.host != null)
+            manager.host.close();
+        else if (manager.client != null)
+            manager.client.close();
+    }
+
     private void setUpMainMenue() {
         Label lblLoginLog = new Label("Not logged in");
         Label lblMainMenue = new Label("Main Menue");
@@ -131,8 +139,6 @@ public class Mainframe extends Application {
         grid.add(lblClient, 0, 4);
 
         dialog.getDialogPane().setContent(grid);
-
-        manager.host.createHost();
 
         dialog.showAndWait();
 

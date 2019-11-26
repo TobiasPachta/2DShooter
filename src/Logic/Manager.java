@@ -33,12 +33,8 @@ public class Manager {
     }
 
     public void initHost() {
-        try {
-            if (host != null)
-                host.host.close();
-        } catch (IOException ioExc) {
-            Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
-        }
+        if (host != null)
+            host.close();
         host = null;
         otherPlayer = null;
         host = new Data.Host();
@@ -46,12 +42,8 @@ public class Manager {
     }
 
     public void initClient() {
-        try {
-            if (client != null)
-                client.host.close();
-        } catch (IOException ioExc) {
-            Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
-        }
+        if (client != null)
+            client.close();
         client = null;
         otherPlayer = null;
         client = new Data.Client();
@@ -125,10 +117,6 @@ public class Manager {
                 } else if (command.contains(otherPlayer.getName())) {
                     playerGotKill(otherPlayer);
                 }
-            }
-            //GameOver
-            else if (command.startsWith("go")) {
-                // Stop.
             }
         }
     }

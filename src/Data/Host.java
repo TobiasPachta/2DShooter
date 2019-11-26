@@ -9,9 +9,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Host {
-    public ServerSocket host;
     public Socket client;
-    private int port = 1111;
+    private ServerSocket host;
+    private int port = 10270;
     private String ip = "127.0.0.1";
     private MyConnectionThread connectionThread;
 
@@ -51,5 +51,14 @@ public class Host {
 
     public void writeMessage(String message) throws IOException {
         ConnectionIO.writeMessage(client, message);
+    }
+
+    public void close() {
+        try {
+            if (!host.isClosed())
+                host.close();
+        } catch (IOException ioExc) {
+            Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
+        }
     }
 }
