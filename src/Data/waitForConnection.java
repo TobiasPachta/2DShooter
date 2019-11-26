@@ -22,7 +22,7 @@ class MyConnectionThread implements Runnable {
         try {
             connectionHoster.client = host.accept();
         } catch (IOException ioExc) {
-            Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
+            //Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
         }
     }
 }

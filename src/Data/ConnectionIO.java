@@ -5,6 +5,8 @@ import java.net.Socket;
 
 class ConnectionIO {
     static String readMessage(Socket socket) throws IOException {
+        if(socket == null)
+            return "";
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         char[] buffer = new char[255];
         if (bufferedReader.ready()) {
@@ -15,6 +17,8 @@ class ConnectionIO {
     }
 
     static void writeMessage(Socket socket, String message) throws IOException {
+        if(socket == null)
+            return;
         PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         printWriter.print(message);
         printWriter.flush();

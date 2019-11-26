@@ -47,7 +47,7 @@ public class Client {
 
     public void close() {
         try {
-            if (!host.isClosed())
+            if (host != null && !host.isClosed())
                 host.close();
         } catch (IOException ioExc) {
             Alerter.Alert(Alert.AlertType.ERROR, "IO Error", "Something went wrong" + ioExc.getMessage());
