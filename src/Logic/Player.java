@@ -11,7 +11,7 @@ public class Player {
     private int yCord;
     Color color;
     int speed = 10;
-    double shotCooldownTimer = 0;
+    public double shotCooldownTimer = 0;
     Direction direction;
     Hitbox hitbox;
 

@@ -335,6 +335,10 @@ public class Mainframe extends Application {
                 gc.setFill(Color.DARKGRAY);
                 gc.fillRect(0, 0, manager.gameField.x, manager.gameField.y);
 
+                if(manager.host != null) {
+                    manager.currentPlayer.shotCooldownTimer -= 0.016;
+                    manager.otherPlayer.shotCooldownTimer -= 0.016;
+                }
                 manager.handleInput(input);
 
                 // background image clears canvas

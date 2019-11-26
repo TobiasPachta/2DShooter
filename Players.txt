@@ -1,5 +1,5 @@
 Player: Balint 
-Kills: 42 
+Kills: 46 
 
 Player: Alex 
 Kills: 15 
@@ -11,7 +11,7 @@ Player: Alint
 Kills: 0 
 
 Player: Tobi 
-Kills: 5 
+Kills: 9 
 
 Player: Peter 
 Kills: 34 
@@ -41,5 +41,5 @@ Player: Drölf
 Kills: 2 
 
 Player: Tobias 
-Kills: 56 
+Kills: 58 
 

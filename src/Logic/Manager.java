@@ -92,7 +92,7 @@ public class Manager {
                     for (int i = 2; i < data.length; i++) {
                         String[] shotInfo = data[i].split(";");
                         if (shotInfo.length < 3)
-                            return;
+                            continue;
                         playerShots.add(new Shot(Integer.parseInt(shotInfo[0]), Integer.parseInt(shotInfo[1]), evaluateDirection(shotInfo[2]), Integer.parseInt(shotInfo[3])));
                     }
                 }
