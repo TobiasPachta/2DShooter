@@ -84,26 +84,28 @@ public class Manager {
                     }
                 }
                 else{
-                    listOfPlayer.add(new Player(splitLine[1],Color.Red));
+                    otherPlayer = new Player(splitLine[1],Color.Red);
+                    listOfPlayer.add(otherPlayer);
+                    saveNewPlayer(otherPlayer);
                 }
             }
             //Type Coordinates
             else if (command.startsWith("tc")) {
                 String[] data = command.split(" ");
-                if (data.length < 3)
-                    return;
-                if (data[1].contains("host")) {
+                if (data.length < 4 && data[1].contains("host")) {
                     otherPlayer.setxCord(Integer.parseInt(data[2]));
                     otherPlayer.setyCord(Integer.parseInt(data[3]));
                     otherPlayer.direction = evaluateDirection(data[4]);
-                } else if (data[1].contains("client")) {
+                } else if (data.length < 4 && data[1].contains("client")) {
                     currentPlayer.setxCord(Integer.parseInt(data[2]));
                     currentPlayer.setyCord(Integer.parseInt(data[3]));
                     currentPlayer.direction = evaluateDirection(data[4]);
-                } else if (data[1].contains("shots")) {
+                } else if (data.length < 3 && data[1].contains("shots")) {
                     playerShots = new ArrayList<>();
                     for (int i = 2; i < data.length; i++) {
                         String[] shotInfo = data[i].split(";");
+                        if(shotInfo.length<3)
+                            return;
                         playerShots.add(new Shot(Integer.parseInt(shotInfo[0]), Integer.parseInt(shotInfo[1]), evaluateDirection(shotInfo[2]), Integer.parseInt(shotInfo[3])));
                     }
                 }
