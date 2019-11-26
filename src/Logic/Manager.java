@@ -66,6 +66,8 @@ public class Manager {
             if (command.startsWith("nl")) {
                 String[] splitLine = command.split(":");
 
+                if (splitLine.length == 0)
+                    continue;
                 if (tools.checkIfPlayerExists(splitLine[1], listOfPlayer)) {
                     for (Player player : listOfPlayer) {
                         if (player.toString().contains(splitLine[1])) {
@@ -74,9 +76,8 @@ public class Manager {
                             break;
                         }
                     }
-                }
-                else{
-                    otherPlayer = new Player(splitLine[1],Color.Red);
+                } else {
+                    otherPlayer = new Player(splitLine[1], Color.Red);
                     listOfPlayer.add(otherPlayer);
                     saveNewPlayer(otherPlayer);
                 }
@@ -96,7 +97,7 @@ public class Manager {
                     playerShots = new ArrayList<>();
                     for (int i = 2; i < data.length; i++) {
                         String[] shotInfo = data[i].split(";");
-                        if(shotInfo.length<3)
+                        if (shotInfo.length < 3)
                             return;
                         playerShots.add(new Shot(Integer.parseInt(shotInfo[0]), Integer.parseInt(shotInfo[1]), evaluateDirection(shotInfo[2]), Integer.parseInt(shotInfo[3])));
                     }
