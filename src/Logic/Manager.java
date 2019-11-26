@@ -83,6 +83,9 @@ public class Manager {
                         }
                     }
                 }
+                else{
+                    listOfPlayer.add(new Player(splitLine[1],Color.Red));
+                }
             }
             //Type Coordinates
             else if (command.startsWith("tc")) {
