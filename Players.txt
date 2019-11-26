@@ -1,5 +1,5 @@
 Player: Balint 
-Kills: 39 
+Kills: 42 
 
 Player: Alex 
 Kills: 15 
@@ -41,5 +41,5 @@ Player: Drölf
 Kills: 2 
 
 Player: Tobias 
-Kills: 47 
+Kills: 56 
 
