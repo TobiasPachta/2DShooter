@@ -73,7 +73,6 @@ public class Mainframe extends Application {
 
         Button btnLeaderboard = new Button("Leaderboard");
         btnLeaderboard.setOnAction(e -> handleLeaderboard());
-        //TODO: Add event on Leaderboard button
 
         VBox verticalBox = new VBox(20);
         verticalBox.setAlignment(Pos.CENTER);
@@ -140,12 +139,15 @@ public class Mainframe extends Application {
         if (manager.host.client != null) {
             lblConnectionInfo.setText("Hosting" + manager.host.client.getLocalAddress());
             manager.isConnected = true;
+
             if (manager.currentPlayer != null) {
                 manager.sendNewLoginInfo();
             }
-            manager.handleIncommingMessages();
-            if (manager.otherPlayer != null)
-                lblConnectionInfo.setText("Hosting " + manager.otherPlayer.getName());
+            while (manager.otherPlayer == null) {
+                manager.handleIncommingMessages();
+                if (manager.otherPlayer != null)
+                    lblConnectionInfo.setText("Hosting " + manager.otherPlayer.getName());
+            }
         } else
             lblConnectionInfo.setText("Disconnected");
     }
@@ -203,9 +205,11 @@ public class Mainframe extends Application {
             if (manager.currentPlayer != null) {
                 manager.sendNewLoginInfo();
             }
-            manager.handleIncommingMessages();
-            if (manager.otherPlayer != null)
-                lblConnectionInfo.setText("Connected to " + manager.otherPlayer.getName());
+            while (manager.otherPlayer == null) {
+                manager.handleIncommingMessages();
+                if (manager.otherPlayer != null)
+                    lblConnectionInfo.setText("Connected to " + manager.otherPlayer.getName());
+            }
         } else
             lblConnectionInfo.setText("Disconnected");
     }
