@@ -246,8 +246,6 @@ public class Manager {
     }
 
     private void handleInput(Player player, String input) {
-        player.shotCooldownTimer -= 0.016;
-
         if (player.shotCooldownTimer <= 0) {
             if (input.contains("UP")) {
                 addShot(Direction.NORTH, player);

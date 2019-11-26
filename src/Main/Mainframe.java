@@ -403,7 +403,7 @@ public class Mainframe extends Application {
 
         int i = 0;
         for (Logic.Player player: manager.listOfPlayer) {
-            lblPlayerNames.add(new Label("Player: "+player.getName()));
+            lblPlayerNames.add(new Label(player.getName()));
             lblPlayerKills.add(new Label("Kills: "+ player.getKills()));
             if(i == leaderboardCount)
                 break;
@@ -418,11 +418,16 @@ public class Mainframe extends Application {
 
         playerInfos.getChildren().add(lblHeader);
 
+
         int playerSize = manager.listOfPlayer.size();
         for(i = 0; i < leaderboardCount; i++)
         {
-            playerInfos.getChildren().add(lblPlayerNames.get(i));
-            playerInfos.getChildren().add(lblPlayerKills.get(i));
+            HBox line = new HBox(20);
+            line.setAlignment(Pos.CENTER);
+            line.getChildren().add(lblPlayerNames.get(i));
+            line.getChildren().add(lblPlayerKills.get(i));
+
+            playerInfos.getChildren().addAll(line);
         }
 
         VBox verticalBoxTopLeft = new VBox(btnBackToMainMenue);
@@ -431,7 +436,7 @@ public class Mainframe extends Application {
         VBox verticalBox = new VBox(20);
         verticalBox.getChildren().addAll(verticalBoxTopLeft, playerInfos);
 
-        Leaderboard = new Scene(verticalBox, 300, playerSize*80);
+        Leaderboard = new Scene(verticalBox, 300, 700);
         Leaderboard.getStylesheets().add(Mainframe.class.getResource("UIStyle.css").toString());
 
         currentPrimaryStage.setScene(Leaderboard);
