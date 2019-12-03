@@ -147,9 +147,10 @@ public class Mainframe extends Application {
             manager.isConnected = true;
 
             while (manager.otherPlayer == null) {
-                if (manager.currentPlayer != null) {
-                    manager.sendNewLoginInfo();
+                if (manager.currentPlayer == null) {
+                    break;
                 }
+                manager.sendNewLoginInfo();
                 manager.handleIncommingMessages();
                 if (manager.otherPlayer != null)
                     lblConnectionInfo.setText("Hosting " + manager.otherPlayer.getName());
@@ -209,9 +210,10 @@ public class Mainframe extends Application {
         if (manager.client.host != null) {
             lblConnectionInfo.setText("Connected to " + manager.client.host.getLocalAddress());
             while (manager.otherPlayer == null) {
-                if (manager.currentPlayer != null) {
-                    manager.sendNewLoginInfo();
+                if (manager.currentPlayer == null) {
+                    break;
                 }
+                manager.sendNewLoginInfo();
                 manager.handleIncommingMessages();
                 if (manager.otherPlayer != null)
                     lblConnectionInfo.setText("Connected to " + manager.otherPlayer.getName());
